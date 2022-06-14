@@ -1,11 +1,18 @@
 require("dotenv").config();
 const express = require("express");
-
+const mongoose = require("mongoose");
+const cookieParser = require("cookie-parser");
 //init express
 const app = express();
 //middleware
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }))
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+
+
+//import routes
+const authRoute = require("./routes/auth");
+const favoritesRoute = require("./routes/favorites")
 
 
 app.get("/api", (req, res) => {
@@ -20,6 +27,8 @@ app.get("/api", (req, res) => {
         };
   })
 
+  app.use("/api/auth", authRoute);
+  app.use("/api/favorites", favoritesRoute);
 
 
 
@@ -30,12 +39,16 @@ app.get("/api", (req, res) => {
 
 
 
-
-
-
-
-
-
+//connect to database
+  mongoose.connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log("Connected to Database")
+   
+   
   app.listen(process.env.PORT, () => {
-    console.log(`Server running on port ${Number(process.env.PORT)}`);
-});  
+      console.log(`Server running on port ${Number(process.env.PORT)}`);
+  });
+  }).catch((error) => {
+    console.log(error);
+  })
+  
