@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 // import {useFetch} from "./useFetch";
-import AnimalResultLayout from "./AnimalResultLayout"
+import AnimalResultLayout from "./AnimalResultLayout";
 import AnimalCard from "./AnimalCard";
 
 let key = "ssg62RKnSfXN0CwnanhRQRMwwwZTvuGnt8BE3th4ujwGKi3Dc4";
@@ -16,12 +16,12 @@ export default function Search(props) {
   //set state to something so our animal array renders on render.
   const [animalType, setAnimalType] = React.useState("dog");
 
-  //from react hook form 
+  //from react hook form
   const { register, handleSubmit, reset } = useForm();
 
   const onSubmit = (data) => {
     //reset animals in state to empty for new api call?
-   
+
     //set state from form data
     setZipCode(data.zipCode);
     setAnimalType(data.type);
@@ -48,67 +48,58 @@ export default function Search(props) {
     //set token using state
     setToken(authToken.access_token);
 
-    localStorage.setItem('token',authToken.access_token)
+    localStorage.setItem("token", authToken.access_token);
     console.log(token);
   };
 
- //api call for getting animals from search form params
+  //api call for getting animals from search form params
 
- const getAnimals = async (req, res) => {
-  
-  try {
-    const animals = await fetch(
-      `https://api.petfinder.com/v2/animals?type=${animalType}&location=${zipCode}`,
-      {
-        method: "GET",
-        //   mode: "no-cors",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + localStorage.getItem('token'),
-        },
-      }
-    );
-//set animals
-    setAnimals(await animals.json().animals);
-  } catch (err) {
-    console.log(err);
-  }
-};
- 
-
-
+  const getAnimals = async (req, res) => {
+    try {
+      const response = await fetch(
+        `https://api.petfinder.com/v2/animals?type=${animalType}&location=${zipCode}`,
+        {
+          method: "GET",
+          //   mode: "no-cors",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
+        }
+      );
+      //set animals
+      const result = await response.json();
+      setAnimals(result.animals);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+//
   useEffect(() => {
-    
     getToken();
-   //setAnimalType("dog");
-   //setZipCode(70130)
-   getAnimals();
+    setAnimalType("dog");
+    setZipCode(70130)
+    getAnimals();
 
-
-   console.log(zipCode, animalType, animals);
-   console.log('use efect on frist load')
+    console.log(zipCode, animalType, animals);
+    console.log("use efect on frist load");
   }, []);
 
- 
-
   console.log(token, "token");
-  
 
   return (
-    <>{/**is this appropiate jsx? */}
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <select {...register("type")}>
-        <option value="dog">Dog</option>
-        <option value="cat">Cat</option>
-      </select>
-      <input type="number" {...register("zipCode")} />
+    <>
+      {/**is this appropiate jsx? */}
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <select {...register("type")}>
+          <option value="dog">Dog</option>
+          <option value="cat">Cat</option>
+        </select>
+        <input type="number" {...register("zipCode")} />
 
-      <input type="submit" />
-    </form>
-    <AnimalResultLayout animals={animals}/>
-
-
-
+        <input type="submit" />
+      </form>
+      <AnimalResultLayout animals={animals} />
     </>
   );
 }

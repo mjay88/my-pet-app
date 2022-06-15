@@ -12,10 +12,11 @@ const initialState = {
 //reducer, the reducer is how we will control state based on certain cases
 const globalReducer = (state, action) => {
   switch (action.type) {
-    //if getCurrent user finds a user, we will set state with that data
+    //if getCurrent user finds a user, we define state with that users returned data
     case "SET_USER":
       return {
         ...state,
+        //payload is set on line 67
         user: action.payload,
         fetchingUser: false,
       };
@@ -29,6 +30,7 @@ const globalReducer = (state, action) => {
       return {
         ...state,
         user: null,
+        setFavorites: [],
         fetchingUser: false,
       };
     default:
@@ -45,9 +47,9 @@ export const GlobalProvider = (props) => {
   
 
   //useEffect is a hook that we are using as a life cycle method here,
-  //the second parameter is what we want to listen to changes for, when we leave it as an empty array this useEffect will run everytime the component mounts, everytime we reload or refresh
+  //the second parameter is what we want to listen to changes for, when we leave it as an empty array this useEffect will run everytime the component ?finishes? mounting, everytime we reload or refresh
   useEffect(() => {
-    //on the mount/intial load run getCurrentUser() and get our data from the server if its there
+    //on the mount/intial load run getCurrentUser() and get our data from the server if its there, since we set up an access token with a cookie, to check if someone is logged in we check for that cookie, they don't have to login everytime it refreshes
     getCurrentUser();
   }, []);
 
@@ -56,21 +58,22 @@ export const GlobalProvider = (props) => {
     //request to our backend
     try {
       const res = await axios.get("/api/auth/current");
-      //if data is returned it will be on the response
+      //if data is returned, (if a user is logged in) it will be on the response
       if (res.data) {
-        //if there is a user logged in make another request to get that users favorites
-        const favorites = await axios.get("/api/favorites/current");
-        if (favorites.data) {
+        //if there is a user logged in make another request to get that users favorites and update state with them
+        const favoritesRes = await axios.get("/api/favorites/current");
+        if (favoritesRes.data) {
           //dispatch is going to talk to our reducer, type in the reducer uses all capital letters and underscore for spaces, and payload is the data we are going to use. dispatch=do this in the reducer(managing state). dispatch is just a function specific to our reducer and state making it much easier to manage state, within context actions are also functions that tell us how to comunicate with the backend. Actions are complex functions, dispatch are simple ones just for dealing with state
+          //set the user if there is data returned from api call
           dispatch({ type: "SET_USER", payload: res.data });
-          //setting complete todos in our app equal to what they are in the database
+          //setting favorites in state equal to what they are in the database for current user
           dispatch({
             type: "SET_FAVORITES",
-            payload:favorites
+            payload:favoritesRes
           });
        
         }
-        //if no data is found dispatch this type, no payload because no data
+        //if no data is found dispatch this type, no payload because no data, set state back to initial state
       } else {
         dispatch({ type: "RESET_USER" });
       }
@@ -80,8 +83,22 @@ export const GlobalProvider = (props) => {
     }
   };
 
+  
+  const logout = async () => {
+    try {
+      await axios.put("/api/auth/logout");
+
+      dispatch({ type: "RESET_USER" });
+    } catch (err) {
+      console.log(err);
+      dispatch({ type: "RESET_USER" });
+    }
+  };
+
   const value = {
     ...state,
+    getCurrentUser,
+    logout,
   };
   return (
     <GlobalContext.Provider value={value}>

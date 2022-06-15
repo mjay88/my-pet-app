@@ -6,15 +6,20 @@ import AuthBox from "./AuthBox";
 import "../App.scss";
 
 const Layout = (props) => {
-const {animals} = props; 
+
+const {animals} = props;
+
   return (
     <BrowserRouter>
        <Header />
       <Routes>
         <Route exact path="/" element={<h1>Home</h1>} />
         <Route exact path="/search" element={<Search animals={animals}/>} />
-        {/**if login prop is true, conditional logic for login router, else - register route */}
-        <Route exact path="/authbox" element={<AuthBox registration/>} />
+        {/**if registration prop is true, conditional logic for login router, else -  route */}
+        <Route exact path="/registration" element={<AuthBox registration/>} />
+        <Route exact path="/login" element={<AuthBox login/>} />
+
+        
 
       </Routes>
     </BrowserRouter>

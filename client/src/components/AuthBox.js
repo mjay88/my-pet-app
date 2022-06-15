@@ -1,8 +1,12 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm, FormState } from "react-hook-form";
+import axios from "axios";
+import {useGlobalContext} from "../context/GlobalContext";
 
 const AuthBox = ({ registration }) => {
+  const { getCurrentUser, user } = useGlobalContext();
+  const navigate = useNavigate();
   //setting state from form input
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -18,11 +22,31 @@ const AuthBox = ({ registration }) => {
 
   const onSubmit = (data) => {
     console.log("RESULT", data);
-    setEmail(data.Email);
+    setEmail(data.email);
     setPassword(data.password);
     setConfirmPassword(data.password);
     setName(data.name);
   };
+
+
+  let data = {};
+
+  if (register) {
+    //data to be sent to server
+    data = {
+      name,
+      email,
+      password,
+      confirmPassword,
+    };
+  } else {
+    data = {
+      email,
+      password,
+    };
+  }
+
+
 
   return (
     <div className="auth">
@@ -109,7 +133,7 @@ const AuthBox = ({ registration }) => {
             {!registration ? (
               <div className="auth__register">
                 <p>
-                  Not a member? <Link to="/register">Register now</Link>
+                  Not a member? <Link to="/registration">Register now</Link>
                 </p>
               </div>
             ) : (
