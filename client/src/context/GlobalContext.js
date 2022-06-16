@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useEffect } from "react";
+import React, { createContext, useContext, useReducer, useEffect, useState } from "react";
 import axios from "axios";
 //in context we are going to create the reduceer and we are going to pass down the animals from our api call
 //when using context globally we always need to start with defining our initial state
@@ -44,7 +44,7 @@ export const GlobalContext = createContext(initialState);
 //provider component
 export const GlobalProvider = (props) => {
   const [state, dispatch] = useReducer(globalReducer, initialState);
-  
+  const [animals, setAnimals] = useState("");
 
   //useEffect is a hook that we are using as a life cycle method here,
   //the second parameter is what we want to listen to changes for, when we leave it as an empty array this useEffect will run everytime the component ?finishes? mounting, everytime we reload or refresh
@@ -99,6 +99,8 @@ export const GlobalProvider = (props) => {
     ...state,
     getCurrentUser,
     logout,
+    animals,
+    setAnimals
   };
   return (
     <GlobalContext.Provider value={value}>

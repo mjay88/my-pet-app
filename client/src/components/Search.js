@@ -1,16 +1,19 @@
 import React, { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
-// import {useFetch} from "./useFetch";
 import AnimalResultLayout from "./AnimalResultLayout";
 import AnimalCard from "./AnimalCard";
+import "../App.scss";
+import { useGlobalContext } from "../context/GlobalContext";
+
 
 let key = "ssg62RKnSfXN0CwnanhRQRMwwwZTvuGnt8BE3th4ujwGKi3Dc4";
 let secret = "xCknCe8Vbez42FlMgPWdK95ngdg5G0lIMXSLB9FB";
 
-export default function Search(props) {
+export default function Search() {
   const [token, setToken] = React.useState("");
   //animals will be an array, should this even be in state?
-  const [animals, setAnimals] = React.useState([]);
+  //animals is passed to search from context, and animals changes from search component every time user clicks search
+  const {animals, setAnimals} = useGlobalContext();
   //get this from the search form
   const [zipCode, setZipCode] = React.useState(70130);
   //set state to something so our animal array renders on render.
@@ -85,7 +88,7 @@ export default function Search(props) {
     console.log("use efect on frist load");
   }, []);
 
-  console.log(token, "token");
+  console.log(token, "token", animals, 'animals');
 
   return (
     <>

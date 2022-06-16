@@ -1,6 +1,7 @@
 import * as React from 'react';
 
 import AnimalCard from './AnimalCard';
+import "../App.scss";
 
 export default function AnimalResultLayout(props) {
 	console.log(props.animals, 'from animalresults');
