@@ -1,112 +1,147 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useForm, FormState } from "react-hook-form";
+import axios from "axios";
+import { useGlobalContext } from "../context/GlobalContext";
 
-const AuthBox = ({ registration }) => {
+
+
+//register is a just prop set set to true if we are on the register route. set in layout. That is how all the conditional statements on this page work
+const AuthBox = ({ register }) => {
+  const { getCurrentUser, user } = useGlobalContext();
+  const navigate = useNavigate();
   //setting state from form input
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [confirmPassword, setConfirmPassword] = React.useState("");
   const [name, setName] = React.useState("");
-  //form stuff
-  const {
-    register,
-    formState: { errors },
-    getValues,
-    handleSubmit,
-  } = useForm();
+  //when we hit the login or register button this changes to true
+  const [loading, setLoading] = React.useState(false);
+  //this is our error object
+  const [errors, setErrors] = React.useState({});
+  
 
-  const onSubmit = (data) => {
-    console.log("RESULT", data);
-    setEmail(data.Email);
-    setPassword(data.password);
-    setConfirmPassword(data.password);
-    setName(data.name);
+  React.useEffect(() => {
+    //if user is true and navigate is not null
+    if (user && navigate) {
+      navigate("/favorites");
+    }
+  }, [user, navigate]);
+
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    let data = {};
+
+    if (register) {
+      //data to be sent to server
+      data = {
+        name,
+        email,
+        password,
+        confirmPassword,
+      };
+    } else {
+      data = {
+        email,
+        password,
+      };
+    }
+
+    axios
+    //if register is true send to our register route, otherwise send data to login routes
+      .post(register ? "/api/auth/register" : "/api/auth/login", data)
+      .then(() => {
+        //repeats our request from Global context to get our current user and gets our favorites 
+        getCurrentUser();
+      })
+      
+      .catch((err) => {
+        setLoading(false);
+//if the property of response exists on error and data property exists on response
+        if (err?.response?.data) {
+          //set state
+          setErrors(err.response.data);
+        }
+      });
   };
 
   return (
     <div className="auth">
       <div className="auth__box">
         <div className="auth__header">
-          <h1>{registration ? "Register" : "Login"}</h1>
+          <h1>{register ? "Register" : "Login"}</h1>
         </div>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          {/**if registration is true... */}
-          {registration && (
+
+        <form onSubmit={onSubmit}>
+          {register && (
             <div className="auth__field">
-              <label className="authbox__label">Name</label>
+              <label>Name</label>
               <input
-                className="authbox__input"
                 type="text"
-                {...register("name", {
-                  required: "Please enter your user name",
-                  maxLength: 80,
-                })}
+                //set name from form input
+                value={name}
+                //set name from form input
+                onChange={(e) => setName(e.target.value)}
               />
-              {errors.name && (
-                <p style={{ color: "white" }}>{errors.password.name}</p>
-              )}
+{/*display errors */}
+              {errors.name && <p className="auth__error">{errors.name}</p>}
             </div>
           )}
 
           <div className="auth__field">
-            <label className="authbox__label">Email</label>
+            <label>Email</label>
             <input
-              className="authbox__input"
               type="text"
-              {...register("Email", {
-                required: "Please enter a valid email",
-                pattern:
-                  /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-              })}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
-            {errors.Email && (
-              <p style={{ color: "white" }}>{errors.Email.message}</p>
-            )}
+
+            {errors.email && <p className="auth__error">{errors.email}</p>}
           </div>
 
           <div className="auth__field">
-            <label className="authbox__label">Password: </label>
+            <label>Password</label>
             <input
-              className="authbox__input"
               type="password"
-              {...register("password", { required: "Password is required!" })}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
+
             {errors.password && (
-              <p style={{ color: "black" }}>{errors.password.message}</p>
+              <p className="auth__error">{errors.password}</p>
             )}
           </div>
 
-          {registration && (
+          {register && (
             <div className="auth__field">
-              <label className="authbox__label">Confirm Password: </label>
+              <label>Confirm Password</label>
               <input
-                className="authbox__input"
                 type="password"
-                {...register("passwordConfirmation", {
-                  required: "Please confirm password!",
-                  validate: {
-                    matchesPreviousPassword: (value) => {
-                      const { password } = getValues();
-                      return password === value || "Passwords should match!";
-                    },
-                  },
-                })}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
               />
-              {errors.passwordConfirmation && (
-                <p style={{ color: "black" }}>
-                  {errors.passwordConfirmation.message}
-                </p>
+
+              {errors.confirmPassword && (
+                <p className="auth__error">{errors.confirmPassword}</p>
               )}
             </div>
           )}
 
           <div className="auth__footer">
-            <button className="btn" type="submit">
-              {registration ? "Login" : "Register"}
+            {Object.keys(errors).length > 0 && (
+              <p className="auth__error">
+                
+                {register ? "You have some validation errors" : errors.error}
+              </p>
+            )}
+
+            <button className="btn" type="submit" disabled={loading}>
+              {register ? "Register" : "Login"}
             </button>
-            {/*if register is not true link to register now, else link to login now */}
-            {!registration ? (
+ {/*if register is not true link to register now, else link to login now */}
+            {!register ? (
               <div className="auth__register">
                 <p>
                   Not a member? <Link to="/register">Register now</Link>

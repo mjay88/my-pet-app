@@ -3,7 +3,6 @@ const router = express.Router();
 const User = require("../models/Users");
 const bycrypt = require("bcryptjs");
 const bcrypt = require("bcryptjs/dist/bcrypt");
-//validation
 const validateRegisterInput = require("../validation/registerValidation");
 const jwt = require("jsonwebtoken");
 const requiresAuth = require("../middleware/permissions");
@@ -15,8 +14,8 @@ router.get("/test", (req, res) => {
   res.send("Auth route working!");
 });
 
-//@route POST api/auth/register
-//@desc register/create a new user
+//@route POST /api/auth/register
+//@desc Create a new user
 //@access Public
 router.post("/register", async (req, res) => {
   try {
@@ -24,35 +23,45 @@ router.post("/register", async (req, res) => {
     if (!isValid) {
       return res.status(400).json(errors);
     }
-    //validation: check for existing user, case sensitive
-
+    //check for existing user, case sensitive, .findOne is a mongodb function
     const existingEmail = await User.findOne({
       email: new RegExp("^" + req.body.email + "$", "i"),
     });
-    //if email already exists return error
+
     if (existingEmail) {
       return res
         .status(400)
         .json({ error: "There is already a user with this email" });
     }
-    //otherwise hash password using bcryptjs
+    //hash the password
     const hashedPassword = await bcrypt.hash(req.body.password, 12);
-    //create new user from form url encoded data
-
+    //create a new user
     const newUser = new User({
       email: req.body.email,
       password: hashedPassword,
       name: req.body.name,
-      favorites: [],
     });
-    //save user to database
+    //save the user to the database, add cookie upon register
     const savedUser = await newUser.save();
+  
+    const payload = { userId: savedUser._id };
+
+    const token = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: "7d"
+    });
+
+    res.cookie("access-token", token, {
+
+      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      httpOnly : true,
+      secure: process.env.NODE_ENV === "production"
+    });
+    
 
     //remove password from post response
     //create a new object and add the saved user data to it
     const userToReturn = { ...savedUser._doc };
     delete userToReturn.password;
-
     //return the new user
     return res.json(userToReturn);
   } catch (err) {
@@ -91,24 +100,25 @@ router.post("/login", async (req, res) => {
     const payload = { userId: user._id };
 
     const token = jwt.sign(payload, process.env.JWT_SECRET, {
-      expiresIn: "7d",
+      expiresIn: "7d"
     });
 
     res.cookie("access-token", token, {
-      //expires in 7days
+//expires in 7days
       expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       //can only be accessed by http server, no one can access the cookie through the browser
-      httpOnly: true,
-      //if we are in production, make sure secure is true
-      secure: process.env.NODE_ENV === "production",
+      httpOnly : true,
+      //if we are in production, make sure secure is true 
+      secure: process.env.NODE_ENV === "production"
     });
 
-    const userToReturn = { ...user._doc };
-    delete userToReturn.password;
-    return res.json({
-      token: token,
-      user: userToReturn,
-    });
+   const userToReturn = { ...user._doc};
+   delete userToReturn.password;
+   return res.json({
+     token: token,
+     user: userToReturn,
+   });
+
   } catch (err) {
     console.log(err);
 
@@ -124,14 +134,13 @@ router.post("/login", async (req, res) => {
 
 //requiresAuth is using the middleware we created in permission.js
 router.get("/current", requiresAuth, (req, res) => {
-    if(!req.user){
-      return res.status(401).send("Unauthorized");
-    }
-    return res.json(req.user);
-  });
+  if(!req.user){
+    return res.status(401).send("Unauthorized");
+  }
+  return res.json(req.user);
+});
+ 
 
-
-  
 //@route  PUT/api/auth/logout
 //@desc log out user and clear cookie
 //@access private
