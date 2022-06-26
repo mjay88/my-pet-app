@@ -1,5 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Source+Sans+Pro:wght@300;600;700&display=swap");
-
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,500;0,700;1,500&family=Source+Sans+Pro:wght@300;700&display=swap");
 $primary: #00a796;
 $primary-dark: #026158;
 $dark: #1f2732;
@@ -8,12 +8,42 @@ $white: #fff;
 $red: #fc6666;
 //authbox
 $light-blue: #8ecae6;
-$secondary-blue:#219ebc;
-$secondary-dark:#023047;
+$secondary-blue: #219ebc;
+$secondary-dark: #023047;
+$box-shadow: lighten($secondary-dark, 5%);
 $orange: #ffb703;
 $dark-orange: #fb8500;
+$gray: #8c9194;
+$light-gray: lighten($gray, 10%);
+$lightest-gray: lighten($light-gray, 10%);
+$off-white: darken($white, 22%);
+body {
+  font-family: "DM Sans", "Source Sans Pro", sans-serif;
+  padding: 0;
+  margin: 0;
+  background-color: $white;
+  color: black;
+}
 
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+}
 
+p,
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+}
+
+button,
+input,
+textarea {
+  font-family: "DM Sans", "Source Sans Pro", sans-serif;
+}
 
 .auth {
   display: flex;
@@ -95,30 +125,142 @@ $dark-orange: #fb8500;
 }
 //pick a color scheme, import fonts
 
-//animal card
-
-.animal-card {
-  max-width: 10rem;
-  max-height: 15rem;
-  background-color: $secondary-dark;
-  margin: 1rem;
-  padding: 1.5rem;
-
-
-}
-
 //header
 .main-header {
+  max-width: 768px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 20px;
+
   &__inner {
     display: flex;
     justify-content: space-between;
   }
   &__left {
-    justify-content: space-around;
     a {
-      margin: 1rem;
+      margin: 2rem;
       text-decoration: none;
       color: inherit;
     }
+  }
+  &__right {
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+  }
+}
+
+//home
+.home {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  h1{
+    padding: 2rem;
+  }
+  img {
+    max-width: 25rem;
+  }
+  p {
+    padding: 3rem;
+    margin: 3rem;
+    text-align: center;
+  }
+}
+
+//animal card
+
+.animal-card {
+  box-shadow: 0 0 10px 5px $gray;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-flow: column wrap;
+  //set the size of image container to what you want the image max size to approx be
+  max-width: 20rem;
+  min-height: 35rem;
+  background-color: $secondary-dark;
+  margin: 1rem;
+  padding: 1.5rem;
+  overflow: hidden;
+  object-fit: cover;
+  color: $white;
+  border-radius: 0.2rem;
+  &__image {
+    margin: auto;
+    //fills in max space defined by container
+    max-width: 100%;
+    //dont set height fucks with everything
+    object-fit: cover;
+  }
+  &__content {
+    text-align: center;
+    * {
+      line-height: 1.7;
+    }
+  }
+  &__inner-content {
+    display: flex;
+    justify-content: space-between;
+    height: 2rem;
+    margin-top: 1rem;
+    button {
+      height: 2rem;
+      width: 6rem;
+      outline: none;
+    }
+    .btn1 {
+      margin-right: 1rem;
+    }
+    .ripple {
+      background-position: center;
+      transition: background 0.8s;
+    }
+    .ripple:hover {
+      background: $off-white radial-gradient(circle, transparent 1%, $white 1%)
+        center/15000%;
+    }
+    .ripple:active {
+      background-color: $off-white;
+      background-size: 100%;
+      transition: background 0s;
+    }
+  }
+}
+
+//AnimalResultsLayout
+.animal-results {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+//search bar
+.search-bar {
+  display: flex;
+  justify-content: space-evenly;
+  margin-top: 2rem;
+  margin-bottom: 3rem;
+  height: 30px;
+  input[type="number"] {
+    width: 15rem;
+  }
+}
+
+//footer
+
+.footer{
+  
+  max-width: 768px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 20px;
+  &__inner{
+    display: flex;
+  justify-content: space-around;
+  align-items: center;
   }
 }
