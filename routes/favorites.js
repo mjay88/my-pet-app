@@ -22,7 +22,6 @@ router.get("/test", (req, res) => {
 //@access private
 
 router.post("/", requiresAuth, async (req, res) => {
-  //destructure objects from postman ex.
  try{
    //get the user id from current user (the user doing the liking)
    req.body['user'] = req.user._id;

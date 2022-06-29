@@ -1,5 +1,20 @@
 import React, { createContext, useContext, useReducer, useEffect, useState } from "react";
 import axios from "axios";
+
+/*For Basit: Globalcontext should be retreiving current users favorites...correct? If not how do we do that?
+
+We save our favorites to the database from the liked button on AnimalCard, should we be saving it from GlobalContext like example?
+
+Still not rendering animals first time we go to search?
+
+Why is password hashing not happening? 
+
+
+
+
+
+*/
+
 //in context we are going to create the reduceer and we are going to pass down the animals from our api call
 //when using context globally we always need to start with defining our initial state
 
@@ -12,7 +27,7 @@ const initialState = {
 //reducer, the reducer is how we will control state based on certain cases
 const globalReducer = (state, action) => {
   switch (action.type) {
-    //if getCurrent user finds a user, we define state with that users returned data
+    //if getCurrent finds a user, we define state with that users returned data
     case "SET_USER":
       return {
         ...state,
@@ -69,7 +84,7 @@ export const GlobalProvider = (props) => {
           //setting favorites in state equal to what they are in the database for current user
           dispatch({
             type: "SET_FAVORITES",
-            payload:favoritesRes
+            payload:favoritesRes.data
           });
        
         }
