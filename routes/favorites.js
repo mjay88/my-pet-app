@@ -21,21 +21,17 @@ router.get("/test", (req, res) => {
 //@desc Create a new favorite
 //@access private
 
-router.post("/new", requiresAuth, async (req, res) => {
-  //destructure objects from postman ex.
+router.post("/", requiresAuth, async (req, res) => {
  try{
-   //create new favorite
-   const newFavorite = new Favorite({
-       //attaches a user id to each new todo, when we look up current users todos, we search through all the todos in database and pull the ones with our users id
-       user: req.user._id,
-       favorite: req.body
+   //get the user id from current user (the user doing the liking)
+   req.body['user'] = req.user._id;
+   //create a favorite based off of our favorite model
+   const createdFavorite = await Favorite.create(req.body);
 
+   res.status(200).json({
+     success: true,
+     data: createdFavorite,
    })
- //push new favorite into users favorite array, how to get current logged in user though
-    user.favorites.push(newFavorite)
-    await user.save();
-
-    return res.json(newFavorite);
   } catch (err) {
     console.log(err);
 
