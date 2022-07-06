@@ -24,7 +24,7 @@ const initialState = {
   userFavorites: [],
 };
 
-//reducer, the reducer is how we will control state based on certain cases
+//reducer, the reducer is how we will control state based on certain cases, reducer has nothing to do with database
 const globalReducer = (state, action) => {
   switch (action.type) {
     //if getCurrent finds a user, we define state with that users returned data
@@ -74,9 +74,11 @@ export const GlobalProvider = (props) => {
     try {
       const res = await axios.get("/api/auth/current");
       //if data is returned, (if a user is logged in) it will be on the response
+      console.log(res.data, 'inside getCurrentUser on globalContext')
       if (res.data) {
         //if there is a user logged in make another request to get that users favorites and update state with them
         const favoritesRes = await axios.get("/api/favorites/current");
+        console.log(favoritesRes.data, "favoriteRes.data")
         if (favoritesRes.data) {
           //dispatch is going to talk to our reducer, type in the reducer uses all capital letters and underscore for spaces, and payload is the data we are going to use. dispatch=do this in the reducer(managing state). dispatch is just a function specific to our reducer and state making it much easier to manage state, within context actions are also functions that tell us how to comunicate with the backend. Actions are complex functions, dispatch are simple ones just for dealing with state
           //set the user if there is data returned from api call

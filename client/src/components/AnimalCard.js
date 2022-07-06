@@ -1,15 +1,17 @@
 import React from "react";
 import "../App.scss";
+import axios from "axios";
 
 const AnimalCard = (props) => {
   const { animal } = props;
+  // console.log(animal.name, "animal to card")
   const [loading, setLoading] = React.useState(false);
 
   const likeHandler = async (e) => {
     setLoading(true);
-    console.log(e.target.id);
+    console.log(e.target.id, "clicked");
     //get liked pet from pet finder via pet id
-    const response = await fetch(
+    const response =  await fetch(
       `https://api.petfinder.com/v2/animals/${e.target.id}`,
       {
         method: "GET",
@@ -19,12 +21,9 @@ const AnimalCard = (props) => {
         },
       }
     );
-
-    const result = await response.json();
-    console.log(result.animal.age);
-
-      const animalToSave = result.animal;
-console.log(animalToSave, 'animalToSave')
+    const result =  await response.json();
+    console.log(result, 'result')
+      const animalToSave =  result.animal;
       const favorite = {
         age: animalToSave.age,
         petId: animalToSave.id,
@@ -33,17 +32,33 @@ console.log(animalToSave, 'animalToSave')
         breed: animalToSave.breed,
         photo: animalToSave.photos.full,
       };
-
+console.log(favorite, "favorite")
       //post request to database
-      const response2 = await fetch(`http://localhost:5000/api/favorites`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(favorite),
-      });
+      //does this function need to get the current user first? so we know where to post or something, add required auth from permissions?
+      //switch to axios!!!
+      const postResponse = async () => {
+        try {
+          //how to pass the right content through???
+          
+          axios.post("/api/favorites/", favorite).then(res => {
+            console.log(res.data, "res.data")
+          }) 
+        } catch (err) {
+          console.log(err);
+      
+        }
+       
+    }
+      // const response2 = await fetch(`http://localhost:5000/api/favorites`, {
+      //   method: "POST",
+      //   mode: "no-cors",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify(favorite),
+      // });
 
-      const result2 = await response2.json();
+      const result2 = postResponse();
       if (result2.success === true) {
         console.log("favorite saved");
       }
@@ -70,7 +85,7 @@ console.log(animalToSave, 'animalToSave')
         <p>{animal.age}</p>
         <p>{animal.breeds.primary}</p>
         <div className="animal-card__inner-content">
-          <button className="ripple btn1" onClick={likeHandler}>
+          <button className="ripple btn1" id={animal.id} onClick={likeHandler}>
             {loading ? "Liked" : "Like"}
           </button>
           <button className="ripple btn2" >More Info!</button>

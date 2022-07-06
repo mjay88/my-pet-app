@@ -1,7 +1,8 @@
 const User = require("../models/Users");
 const jwt = require("jsonwebtoken");
- 
+//grab access token from request, verifty cookie using jwt, check if cookie is attached to a user, if it is we know they are authorised
 const requiresAuth = async (req, res, next) => {
+  
   const token = req.cookies["access-token"];
   let isAuthed = false;
  
