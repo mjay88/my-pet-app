@@ -7,12 +7,19 @@ import Footer from "./Footer";
 import Home from "./Home";
 import FavoritesLayout from "./FavoritesLayout";
 import "../App.scss";
+import { useGlobalContext } from "../context/GlobalContext";
 
 const Layout = (props) => {
 
 const {animals} = props;
-
-  return (
+   //checks state and returns whether fetchingUser is true or false
+   const { fetchingUser } = useGlobalContext();
+   //if fetching User is false, display our loading div
+  return  fetchingUser ? (
+    <div className="loading">
+      <h1>Loading</h1>
+    </div>
+  ) : (
     <BrowserRouter>
        <Header />
       <Routes>

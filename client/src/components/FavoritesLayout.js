@@ -8,7 +8,7 @@ import AnimalCard from "./AnimalCard";
 
 
 const FavoritesLayout = () => {
-const {userFavorites} = useGlobalContext;
+const {userFavorites, user, getCurrentUser} = useGlobalContext();
 //api call to database for favorites of current user?
 const getFavorites = async () => {
     const response = await fetch(`http://localhost:5000/api/favorites/current`, {
@@ -25,9 +25,10 @@ const getFavorites = async () => {
 
   };
 
-
+console.log(user, "current user")
 useEffect(() => {
     getFavorites();
+    getCurrentUser();
 }, [])
 
 
@@ -36,7 +37,7 @@ useEffect(() => {
 return (
     //this works because of getCurrent user in global context
     <div className='animal-results'>
-
+        {user.name}
 
         {/* {userFavorites.length > 0 &&
             userFavorites.animals.map((animal) => {

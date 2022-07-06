@@ -8,6 +8,8 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+const cors = require('cors');
+
 
 
 //import routes
@@ -29,6 +31,11 @@ app.get("/api", (req, res) => {
 
   app.use("/api/auth", authRoute);
   app.use("/api/favorites", favoritesRoute);
+  
+  
+  app.use(cors());
+  app.options('*', cors());
+  
 
 
 

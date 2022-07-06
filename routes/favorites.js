@@ -21,6 +21,8 @@ router.get("/test", (req, res) => {
 //@desc Create a new favorite
 //@access private
 
+//Blind Spots
+//    "/.new" ?
 router.post("/", requiresAuth, async (req, res) => {
  try{
    //get the user id from current user (the user doing the liking)
@@ -37,17 +39,35 @@ router.post("/", requiresAuth, async (req, res) => {
 
     return res.status(500).send(err.message);
   }
+
+const newFavorite = await new Favorite( req.body );
+newFavorite.save(function (err) {
+  if (err) return handleError(err);
+  // saved!
+});
+
+
+
+
+
+
+
+
+
+
 });
 
 //@route Get/api/favorites/current
 //@desc return current users favorites
 //@access private
-
-router.get("/current", async (req, res) => {
+// petName
+// :
+// "Wookie (Benefactor Dog)"
+router.get("/current", requiresAuth, async (req, res) => {
   try {
     //get user by id
-    const Favorites = await Favorite.find({
-      user: req.params.user,
+    const Favorites = await Favorite.findOne({
+      petName: "Wookie (Benefactor Dog)"
     });
     return res.json({ favorites: Favorites });
   } catch (err) {
