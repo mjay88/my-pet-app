@@ -13,12 +13,8 @@ const UserSchema = new Schema(
     name: {
       type: String,
       required: true,
-    },
-    favorites: {
-      //add dog id to here
-      type: Array,
-      timestamps: true,
     }
+  
   },
   {
     timestamps: true,

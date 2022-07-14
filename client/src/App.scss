@@ -237,6 +237,14 @@ textarea {
   justify-content: center;
   align-items: center;
 }
+//favs layout
+.favorites-results{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  
+}
 
 //search bar
 .search-bar {

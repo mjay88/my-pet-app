@@ -24,37 +24,27 @@ router.get("/test", (req, res) => {
 //Blind Spots
 //    "/.new" ?
 router.post("/", requiresAuth, async (req, res) => {
- try{
-   //get the user id from current user (the user doing the liking)
-   req.body['user'] = req.user._id;
-   //create a favorite based off of our favorite model
-   const createdFavorite = await Favorite.create(req.body);
+  try {
+    //get the user id from current user (the user doing the liking)
+    req.body["user"] = req.user._id;
+    //create a favorite based off of our favorite model
+    const createdFavorite = await Favorite.create(req.body);
 
-   res.status(200).json({
-     success: true,
-     data: createdFavorite,
-   })
+    res.status(200).json({
+      success: true,
+      data: createdFavorite,
+    });
   } catch (err) {
     console.log(err);
 
     return res.status(500).send(err.message);
   }
 
-const newFavorite = await new Favorite( req.body );
-newFavorite.save(function (err) {
-  if (err) return handleError(err);
-  // saved!
-});
-
-
-
-
-
-
-
-
-
-
+  const newFavorite = await new Favorite(req.body);
+  newFavorite.save(function (err) {
+    if (err) return handleError(err);
+    // saved!
+  });
 });
 
 //@route Get/api/favorites/current
@@ -63,17 +53,54 @@ newFavorite.save(function (err) {
 // petName
 // :
 // "Wookie (Benefactor Dog)"
+// router.get("/current", requiresAuth, async (req, res) => {
+
+//   try {
+//   const favorites = await Favorite.find({}, {
+//     user: req.user._id
+// //sorts by timestamp
+//   })
+//   // .sort({'_id': -1});
+// //this
+//   return res.json({ favorites: favorites });
+//   } catch (err) {
+//     console.log(err);
+
+//     return res.status(500).send(err.message);
+//   }
+// });
 router.get("/current", requiresAuth, async (req, res) => {
   try {
-    //get user by id
-    const Favorites = await Favorite.findOne({
-      petName: "Wookie (Benefactor Dog)"
-    });
-    return res.json({ favorites: Favorites });
+    // get user by id
+    // const favorites = await Favorite.find(
+    //   {
+
+
+    
+    //   },
+    //   {
+    //     user: req.user._id
+    //   })
+    // return res.json({ Favorites: favorites });
+    Favorite.find({ user: req.user._id })
+    //return entire model
+      .then(dbModel => res.json(dbModel))
+      .catch(err => res.status(422).json(err));
   } catch (err) {
     console.log(err);
     return res.status(500).send(err.message);
   }
 });
+
+
+//   try {
+//     //get user by id
+//     const favorites = await Favorite.find({}, { user: req.user._id });
+//     return res.json({ favorites: favorites });
+//   } catch (err) {
+//     console.log(err);
+//     return res.status(500).send(err.message);
+//   }
+// });
 
 module.exports = router;
