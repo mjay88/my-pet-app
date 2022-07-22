@@ -59,7 +59,6 @@ const globalReducer = (state, action) => {
         user: action.payload,
         fetchingUser: false,
       };
-      //this saves animal to our database
     case "SET_FAVORITES":
       return {
         ...state,
@@ -79,11 +78,17 @@ const globalReducer = (state, action) => {
         ...state,
         token: action.payload,
       };
+      //something is redundant here, am I getting the ids from the database and also saving them seperatly in state??? need to refactor
     case "GET_FAVORITES":
       return {
         ...state,
         userFavoritesIdsReturnFromPetFinder: action.payload,
       };
+      case "REMOVE_FAVORITE":
+        return {
+          ...state,
+          userFavoritesIds: action.payload,
+        };
     default:
       return state;
   }
@@ -115,11 +120,11 @@ export const GlobalProvider = (props) => {
     try {
       const res = await axios.get("/api/auth/current");
       //if data is returned, (if a user is logged in) it will be on the response
-      console.log(res.data, "inside getCurrentUser on globalContext");
+      // console.log(res.data, "inside getCurrentUser on globalContext");
       if (res.data) {
         //if there is a user logged in make another request to get that users favorites ids from the database, then we have to make another call to pet finder for the most current version of those pets
         const favoritesRes = await axios.get("/api/favorites/current");
-        console.log(favoritesRes.data, "favoriteRes.data 115 context");
+        // console.log(favoritesRes.data, "favoriteRes.data 115 context");
         if (favoritesRes.data) {
           //dispatch is going to talk to our reducer, type in the reducer uses all capital letters and underscore for spaces, and payload is the data we are going to use. dispatch=do this in the reducer(managing state). dispatch is just a function specific to our reducer and state making it much easier to manage state, within context actions are also functions that tell us how to comunicate with the backend. Actions are complex functions, dispatch are simple ones just for dealing with state
           //set the user if there is data returned from api call
@@ -158,7 +163,7 @@ export const GlobalProvider = (props) => {
     });
     //set await to variable so promise is handled
     const authToken = await token.json();
-    console.log(authToken, "inside context for fucks sake line 153");
+    // console.log(authToken, "inside context for fucks sake line 153");
     localStorage.setItem("token", authToken.access_token);
   };
 
@@ -174,58 +179,35 @@ export const GlobalProvider = (props) => {
       dispatch({ type: "RESET_USER" });
     }
   };
-
+//why do I need this if I am already pulling the animal ids from the data base 
   const addFav = (animal) => {
     dispatch({
       type: "SET_FAVORITES",
-      //this is just an array of ids now remember
+      //this is just an array of ids 
       payload: [animal, ...state.userFavoritesIds],
     });
   };
-//sets userFavoritesIdsReturnFromPetFinder
-  // const getFavsFromPetFinder = async (arrayOfIds) => {
-  //   try {
-    //       arrayOfIds.map((id, idx) => {
-  //    const res = await axios.get(
-        //       `https://api.petfinder.com/v2/animals/56266800`,
-        //       {
-        //         headers: {
-        //           "Content-Type": "application/json",
-        //           Authorization: "Bearer " + localStorage.getItem("token"),
-        //         },
-        //       }
-        //     );
 
-    // })
-  //    
-  //     //need to look at how the returned data is structured
-  //     if(res.data){
-  //       console.log(res.data, "response from petfinder")
-  //       dispatch({
-  //         type: "GET_FAVORITES",
-  //         payload: res.data,
-  //       })
-  //     }
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // };
+  //add remove
+  const removeFav = (id) => {
+    dispatch({
+      type: "REMOVE_FAVORITE",
+      payload: state.userFavoritesIds.filter((idToRemove) => 
+         idToRemove.id !== id    
+     )
+    })
+  }
+ 
 
-  // const getFavsFromPetFinder = async (arrayOfIds) => {
-  //   return async function(){
-  //     return  Promise.all(arrayOfIds.map((fav, index) => {
-  //       return axios.get(`https://api.petfinder.com/v2/animals/` + fav);
-  //     })).then(response => {
-  //          setRenderFavs(response)
-  //     })
-  //   }
-  // }
+
+
   const value = {
     ...state,
     getCurrentUser,
     addFav,
     logout,
     getToken,
+    removeFav,
     // getFavsFromPetFinder,
 
   };

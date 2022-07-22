@@ -21,9 +21,9 @@ const Header = () => {
         <div className="main-header__right">
           {/*if user is true we are logged in so our button is a logout button, if user is not true and we are on the home page or path, display our register/login page, and if we are logging in the button reads "register"*/}
           {user ? (
-            <button className="btn" onClick={logout}>
+            <Link to="/" className="btn" onClick={logout}>
               Logout
-            </button>
+            </Link>
           ) : pathname === "/" ? (
             <Link to="/register" className="btn">
               Register

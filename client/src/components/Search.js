@@ -30,25 +30,6 @@ export default function Search() {
     setZipCode("");
   };
 
-  //function for retrieving token
-  // const getToken = async () => {
-  //   const params = new URLSearchParams();
-  //   params.append("grant_type", "client_credentials");
-  //   params.append("client_id", key);
-  //   params.append("client_secret", secret);
-
-  //   const token = await fetch("https://api.petfinder.com/v2/oauth2/token", {
-  //     method: "POST",
-  //     body: params,
-  //   });
-  //   //set await to variable so promise is handled
-  //   const authToken = await token.json();
-  //   // console.log(await token.json());
-  //   //set token using state
-  //   setToken(authToken.access_token);
-
-  //   localStorage.setItem("token", authToken.access_token);
-  // };
   //handler for search params type
   const typeHandler = (e) => {
     setAnimalType(e.target.value);
@@ -57,6 +38,7 @@ export default function Search() {
   const zipCodeHandler = (e) => {
     setZipCode(e.target.value);
   };
+  //convert to axios
   const getAnimals = async (req, res) => {
     try {
       const response = await fetch(

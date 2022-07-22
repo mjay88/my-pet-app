@@ -1,10 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const Favorite = require("../models/Favorite");
-// const Animals = require("../models/Favorites");
 const requiresAuth = require("../middleware/permissions");
-const res = require("express/lib/response");
-const db = require("mongoose");
+
 const createApplication = require("express/lib/express");
 //import permissions to remove password from response
 
@@ -28,12 +26,12 @@ router.post("/", requiresAuth, async (req, res) => {
     //get the user id from current user (the user doing the liking)
     req.body["user"] = req.user._id;
     //create a favorite based off of our favorite model
-    const createdFavorite = await Favorite.create(req.body);
+    // const createdFavorite = await Favorite.create(req.body);
 
-    res.status(200).json({
-      success: true,
-      data: createdFavorite,
-    });
+    // res.status(200).json({
+    //   success: true,
+    //   data: createdFavorite,
+    // });
   } catch (err) {
     console.log(err);
 
@@ -47,45 +45,12 @@ router.post("/", requiresAuth, async (req, res) => {
   });
 });
 
-//@route Get/api/favorites/current
-//@desc return current users favorites
-//@access private
-// petName
-// :
-// "Wookie (Benefactor Dog)"
-// router.get("/current", requiresAuth, async (req, res) => {
-
-//   try {
-//   const favorites = await Favorite.find({}, {
-//     user: req.user._id
-// //sorts by timestamp
-//   })
-//   // .sort({'_id': -1});
-// //this
-//   return res.json({ favorites: favorites });
-//   } catch (err) {
-//     console.log(err);
-
-//     return res.status(500).send(err.message);
-//   }
-// });
 router.get("/current", requiresAuth, async (req, res) => {
   try {
-    // get user by id
-    // const favorites = await Favorite.find(
-    //   {
-
-
-    
-    //   },
-    //   {
-    //     user: req.user._id
-    //   })
-    // return res.json({ Favorites: favorites });
     Favorite.find({ user: req.user._id })
-    //return entire model
-      .then(dbModel => res.json(dbModel))
-      .catch(err => res.status(422).json(err));
+      //return entire model
+      .then((dbModel) => res.json(dbModel))
+      .catch((err) => res.status(422).json(err));
   } catch (err) {
     console.log(err);
     return res.status(500).send(err.message);
@@ -93,14 +58,40 @@ router.get("/current", requiresAuth, async (req, res) => {
 });
 
 
-//   try {
-//     //get user by id
-//     const favorites = await Favorite.find({}, { user: req.user._id });
-//     return res.json({ favorites: favorites });
-//   } catch (err) {
-//     console.log(err);
-//     return res.status(500).send(err.message);
-//   }
-// });
+//fuck this
+//@route delete /api/favorite/:favId
+//@desc delete a liked animal
+//@access private
+
+
+
+router.delete("/:favId", requiresAuth, async (req, res) => {
+
+  try{
+    //fetch the favorite to make sure it exists 
+  const fav = await Favorite.findOne({
+    //it belongs to our current user
+    user:req.user._id,
+    //params
+    _id: req.params.favId,
+  });
+  //if no favorite
+  if(!fav){
+    return res.status(404).json({error: "Could not find this animal"});
+  }
+  //if we find the favorite delete it
+  await Favorite.findOneAndRemove({
+    //first parameter is the same as above, the query were making
+    user: req.user._id,
+    _id: req.params.favId,
+  });
+  return res.json({success: true})
+ }catch(err){
+  console.log(err);
+  return res.status(500).send(err.message);
+ }
+})
+
+
 
 module.exports = router;
