@@ -32,7 +32,7 @@ app.get("/api", (req, res) => {
   app.use("/api/auth", authRoute);
   app.use("/api/favorites", favoritesRoute);
   
-  
+  //need these?
   app.use(cors());
   app.options('*', cors());
   
