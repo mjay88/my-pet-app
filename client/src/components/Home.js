@@ -1,9 +1,6 @@
 import React from "react";
 import Bug from "../images/3415.jpg";
 
-
-
-
 export default function Home() {
   return (
     <div className="home">
@@ -18,11 +15,11 @@ export default function Home() {
           consectetur adipisicing elit. Quas adipisci cum nemo minus eligendi,
           perferendis mollitia nostrum odio ad ipsa rerum natus laboriosam
           dolorem porro! Quas sequi mollitia repellendus repudiandae.
-          <p>
-            Lorem cupiditate molestiae illum aspernatur id quaerat molestias
-            laboriosam. Dolores, adipisci rerum reiciendis, maxime praesentium
-            facere, animi ex numquam quisquam architecto minus?
-          </p>
+        </p>
+        <p>
+          Lorem cupiditate molestiae illum aspernatur id quaerat molestias
+          laboriosam. Dolores, adipisci rerum reiciendis, maxime praesentium
+          facere, animi ex numquam quisquam architecto minus?
         </p>
       </div>
     </div>

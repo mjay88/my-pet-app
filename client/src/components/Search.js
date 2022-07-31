@@ -42,7 +42,7 @@ export default function Search() {
   const getAnimals = async (req, res) => {
     try {
       const response = await fetch(
-        `https://api.petfinder.com/v2/animals?type=${animalType}&location=${zipCode}`,
+        `https://api.petfinder.com/v2/animals?type=${animalType}&location=${zipCode}&limit=50`,
         {
           method: "GET",
             // mode: "no-cors",
@@ -54,7 +54,7 @@ export default function Search() {
       );
       //set animals
       const result = await response.json();
-      console.log(result.animals, "result.aninals")
+      // console.log(result.animals, "result.aninals")
       setAnimals(result.animals);
     } catch (err) {
       console.log(err);

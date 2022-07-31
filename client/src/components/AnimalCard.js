@@ -1,71 +1,82 @@
-import React from "react";
+import React, { useState } from "react";
 import "../App.scss";
 import axios from "axios";
 import { useGlobalContext } from "../context/GlobalContext";
 
-
 const AnimalCard = (props) => {
   const { animal } = props;
-  // console.log(animal.name, "animal to card")
-  const [loading, setLoading] = React.useState(false);
-  const {addFav, userFavoritesIds, removeFav} = useGlobalContext();
-  console.log(userFavoritesIds, "from inside the top of animalCard")
+  const [loading, setLoading] = useState(false);
+  const { addFav, userFavorites, removeFav } = useGlobalContext();
+  const [unliked, setUnliked] = useState(false);
   //try seperating the logic that deals with state from the logic that deals with updating database i.e. the post request
+  console.log(animal, "top of animal card");
+  // console.log(userFavorites, "userFavorites top of animal card")
+
+  //rename userFavorites petId key to id, copy by reference issue?
+  const modedUserFavorites = userFavorites.map((item) => {
+    return {
+      ...item,
+      id: item.petId,
+    };
+  });
+
+  const userFavoritesIds = userFavorites.map((pet) => {
+    return pet.petId;
+  });
+
+  // console.log(modedUserFavorites, "modedUserFavorites")
+
+  //deal with case of liking something twice
   const likeHandler = async (e) => {
     setLoading(true);
-    console.log(e.target.id, "clicked");
-    
 
-      const favorite = {
-        age: animal.age,
-        petId: animal.id,
-        petName: animal.name,
-        species: animal.species,
-        breed: animal.breeds.primary,
-        photo: animal.photos[0].full,
-      };
-// console.log(favorite, "favorite from animal card")
-      //post request to database
-      const postResponse = async () => {
-        try {
-          //how to pass the right content through???
-          
-          axios.post("/api/favorites/", favorite).then(res => {
-            console.log(res.data, "res.data", favorite, 'favorite in animalcard, still saving double')
-            //?does addFav need to be here? is this redundant? 
-            addFav(favorite);
-          }) 
+    const favorite = {
+      age: animal.age,
+      petId: animal.id,
+      petName: animal.name,
+      species: animal.species,
+      breed: animal.breeds.primary,
+      photo: animal.photos[0].full,
+    };
+    //post request to database
+    const postResponse = async () => {
+      try {
+        //how to pass the right content through???
 
-
-        } catch (err) {
-          console.log(err);
-      
-        }
-       
-    }
-   
-      const result2 = postResponse();
-      if (result2.success === true) {
-        console.log("favorite saved");
+        axios.post("/api/favorites/", favorite).then((res) => {
+          //?does addFav need to be here? is this redundant?
+          addFav(favorite);
+        });
+      } catch (err) {
+        console.log(err);
       }
+    };
 
-      setLoading(false);
+    const result2 = postResponse();
+    if (result2.success === true) {
+    }
+
+    setLoading(false);
   };
-//
+  //
   const unlikeHandler = async (animal) => {
     setLoading(true);
-     //this formating is specific to delete in mongo, {data: {animalId:id}}!!!!
-  console.log(animal, 'from inside unlike')
-  
-    await axios.delete("/api/favorites/", {data: {animalId:animal}}).then(() => {
-      removeFav(animal);
-    })
-    
+    //this formating is specific to delete in mongo, {data: {animalId:id}}!!!!
+    console.log(animal, "id inside unlikeHandler");
+    await axios
+      .delete("/api/favorites/", { data: { animalId: animal } })
+      .then(() => {
+        removeFav(animal);
+        setUnliked(true);
+      });
+  };
+  // console.log(modedUserFavorites.includes(), 'includeds')
 
-  }
-
-  return (
+  return unliked ? (
+    <div></div>
+  ) : (
     <div className="animal-card">
+      {animal.id}
       {animal.photos && animal.photos[0] && animal.photos[0].full ? (
         <img
           src={animal.photos[0].full}
@@ -83,17 +94,25 @@ const AnimalCard = (props) => {
         <p>{animal.age}</p>
         <p>{animal.breeds.primary}</p>
         <div className="animal-card__inner-content">
-          {
-            userFavoritesIds.includes(animal.id) ?   <button className="ripple btn1" id={animal.id} onClick={() => unlikeHandler(animal.id)}>
-            {loading ? "Unliked" : "Unlike"}
-          </button> :
-
-          
-          <button className="ripple btn1" id={animal.id} onClick={likeHandler}>
-            {loading ? "Liked" : "Like"}
-          </button>
-}
-          <button className="ripple btn2" >More Info!</button>
+          {/*handle edgecases */}
+          {userFavoritesIds.includes(animal.id) ? (
+            <button
+              className="ripple btn1"
+              id={animal.id}
+              onClick={() => unlikeHandler(animal.id)}
+            >
+              {loading ? "Unliked" : "Unlike"}
+            </button>
+          ) : (
+            <button
+              className="ripple btn1"
+              id={animal.id}
+              onClick={likeHandler}
+            >
+              {loading ? "Liked" : "Like"}
+            </button>
+          )}
+          <button className="ripple btn2">More Info!</button>
         </div>
       </div>
     </div>

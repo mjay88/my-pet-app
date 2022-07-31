@@ -44,9 +44,11 @@ const initialState = {
   user: null,
   token: null,
   fetchingUser: true,
-  //relabel userFavoritesIds to userFavoritesIdsIds
-  userFavoritesIds: [],
-  userFavoritesIdsReturnFromPetFinder: [],
+  //what's saved in our data base
+  userFavorites: [],
+  //from our database
+ 
+  renderFavorites: [],
 };
 
 //reducer, the reducer is how we will control state based on certain cases, reducer has nothing to do with database
@@ -62,14 +64,14 @@ const globalReducer = (state, action) => {
     case "SET_FAVORITES":
       return {
         ...state,
-        userFavoritesIds: action.payload,
+        userFavorites: action.payload,
       };
     //reset the state if no user data is found from getCurrentUser
     case "RESET_USER":
       return {
         ...state,
         user: null,
-        userFavoritesIds: [],
+        userFavorites: [],
         fetchingUser: false,
       };
     //i guess we don't need this here because we are using localstorage? localstorage is kind of like context i guess, we can access it anywhere from front end very easy?
@@ -78,16 +80,17 @@ const globalReducer = (state, action) => {
         ...state,
         token: action.payload,
       };
-      //something is redundant here, am I getting the ids from the database and also saving them seperatly in state??? need to refactor
-    case "GET_FAVORITES":
+      
+      case "GET_RENDER_FAVORITES" : 
       return {
         ...state,
-        userFavoritesIdsReturnFromPetFinder: action.payload,
-      };
+        renderFavorites: action.payload,
+      }
+    
       case "REMOVE_FAVORITE":
         return {
           ...state,
-          userFavoritesIds: action.payload,
+          userFavorites: action.payload,
         };
     default:
       return state;
@@ -126,6 +129,7 @@ export const GlobalProvider = (props) => {
         const favoritesRes = await axios.get("/api/favorites/current");
         // console.log(favoritesRes.data, "favoriteRes.data 115 context");
         if (favoritesRes.data) {
+          console.log(favoritesRes.data, "favResponse from context")
           //dispatch is going to talk to our reducer, type in the reducer uses all capital letters and underscore for spaces, and payload is the data we are going to use. dispatch=do this in the reducer(managing state). dispatch is just a function specific to our reducer and state making it much easier to manage state, within context actions are also functions that tell us how to comunicate with the backend. Actions are complex functions, dispatch are simple ones just for dealing with state
           //set the user if there is data returned from api call
           dispatch({ type: "SET_USER", payload: res.data });
@@ -134,7 +138,14 @@ export const GlobalProvider = (props) => {
             type: "SET_FAVORITES",
             //just getting the Id from database
             payload: await favoritesRes.data.map((pet) => {
-              return pet.petId;
+              return pet
+            }),
+          });
+          dispatch({
+            type: "USER_FAVORITE_IDS",
+            //just getting the Id from database
+            payload: await favoritesRes.data.map((pet) => {
+              return pet.petId
             }),
           });
         }
@@ -167,6 +178,53 @@ export const GlobalProvider = (props) => {
     localStorage.setItem("token", authToken.access_token);
   };
 
+
+
+ 
+//add getPets here, which makes get call to petfinder based on the pets in our database
+
+const getPets = async (arrayOfIds) => {
+
+  
+
+   const response = await Promise.all(
+      
+      arrayOfIds.map(async (id) => {
+        try {
+          const response = axios.get(
+            `https://api.petfinder.com/v2/animals/` + id,
+
+            {
+              method: "GET",
+              // mode: "no-cors",
+
+              headers: {
+                "Content-Type": "application/json",
+
+                Authorization: "Bearer " + localStorage.getItem("token"),
+              },
+            }
+          );
+          const data = await response;
+          console.log(data, "data from inside getPets");
+          return data;
+        } catch (err) {
+          console.log(err.response, "err.response from inside getPets"); // this is the main part. Use the response property from the error object
+
+          return err.response;
+        }
+      })
+    
+  );
+  console.log(response, "response from inside getpets in context")
+  if(response){
+    dispatch({type: "GET_RENDER_FAVORITES", payload: response})
+  }
+};
+
+
+
+
   //dispatches
 
   const logout = async () => {
@@ -184,7 +242,7 @@ export const GlobalProvider = (props) => {
     dispatch({
       type: "SET_FAVORITES",
       //this is just an array of ids 
-      payload: [animal, ...state.userFavoritesIds],
+      payload: [animal, ...state.userFavorites],
     });
   };
 
@@ -192,7 +250,7 @@ export const GlobalProvider = (props) => {
   const removeFav = (id) => {
     dispatch({
       type: "REMOVE_FAVORITE",
-      payload: state.userFavoritesIds.filter((idToRemove) => 
+      payload: state.userFavorites.filter((idToRemove) => 
          idToRemove.id !== id    
      )
     })
@@ -208,8 +266,8 @@ export const GlobalProvider = (props) => {
     logout,
     getToken,
     removeFav,
-    // getFavsFromPetFinder,
-
+    // renderFavs,
+    // setRenderFavs,
   };
   return (
     <GlobalContext.Provider value={value}>
