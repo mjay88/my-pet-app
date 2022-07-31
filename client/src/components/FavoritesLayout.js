@@ -15,10 +15,10 @@ const FavoritesLayout = (props) => {
   const [renderFavs, setRenderFavs] = React.useState("");
 
   const {
-    userFavoritesIds,
+    //userFavorites is whats saved in our database
+    userFavorites,
+
     user,
-    getCurrentUser,
-    userFavoritesIdsReturnFromPetFinder,
   } = useGlobalContext();
   //this doesn't need to be here, userFavoritesIds should be populated from inside context...
   //7/12 need to only save one favorite to db
@@ -26,17 +26,22 @@ const FavoritesLayout = (props) => {
   //the first one to retrieve our animal id numbers from the data base
   //the second one is to petfinder  api to retrieve the most current version of that pet
 
-  console.log(userFavoritesIds, "current user");
-  const uniqueFavorites = [...new Set(userFavoritesIds)];
-  console.log(uniqueFavorites, "unique");
+  //create new fucntion that
+  //iterates through userFavorites
+  //for every favorite, make an call to petfinder based on that favorites petId to return the most up to date status of that pet
+  //update the current favorite to reflect...
+  //if status code was 404, animal is no longer available
+  //if status code 200, update all pertinent fields, leaving object._id?
+
+  const userFavoritesIds = userFavorites.map((pet) => {
+    return pet.petId;
+  });
+
   //make api call to petfinder with promise.all to get all pets stored in userFavoritesIds and setRenderFavs
 
   const getPets = async (arrayOfIds) => {
-
     setRenderFavs(
-
       await Promise.all(
-        
         arrayOfIds.map(async (id) => {
           try {
             const response = axios.get(
@@ -53,11 +58,26 @@ const FavoritesLayout = (props) => {
                 },
               }
             );
+
             const data = await response;
-            console.log(data, "data from inside getPets");
+            //only the error returns if not 404?
+            console.log(data, "line 72");
+            if (data.status === 200) {
+              const newData = {
+                age: data.data.animal.age,
+                petId: data.data.animal.id,
+                id: data.data.animal.id,
+                petName: data.data.animal.name,
+                species: data.data.animal.species,
+                breed: data.data.animal.breeds.primary,
+                photo: data.data.animal.photos[0].full,
+              };
+              console.log(newData, "newData")
+            }
+
             return data;
           } catch (err) {
-            console.log(err.response, "err.response from inside getPets"); // this is the main part. Use the response property from the error object
+            console.log(err.response, "404 error"); // this is the main part. Use the response property from the error object
 
             return err.response;
           }
@@ -66,41 +86,86 @@ const FavoritesLayout = (props) => {
     );
   };
 
+  //create new fucntion that
+  //iterates through userFavorites
+  //for every favorite, make an call to petfinder based on that favorites petId to return the most up to date status of that pet
+  //update the current favorite to reflect...
+  //if status code was 404, animal is no longer available
+  //if status code 200, update all pertinent fields, leaving object._id?
+  // const newGetPets = async (array) => {
+  //   await Promise.all(
+  //     array.map(async (obj) => {
+  //       try {
+  //         const response = axios.get(
+  //           `https://api.petfinder.com/v2/animals/` + obj.petId,
+
+  //           {
+  //             method: "GET",
+  //             // mode: "no-cors",
+
+  //             headers: {
+  //               "Content-Type": "application/json",
+
+  //               Authorization: "Bearer " + localStorage.getItem("token"),
+  //             },
+  //           }
+  //         );
+  //         const data = await response;
+  //         //deal with edge case if data.status === 404 what to do?
+  //         // if(data.status) this essential returns a boolean because the error is spit out in the catch
+  //         //create new object to return
+  //         const newData = {
+  //           age: data.data.animal.age,
+  //           petId: data.data.animal.petId,
+  //           petName: data.data.animal.name,
+  //           species: data.data.animal.species,
+  //           breed: data.data.animal.breeds.primary,
+  //           photo: data.data.animal.photos[0].full,
+  //         };
+  //         //deal with edge cases before returning
+  //         return data;
+  //       } catch (err) {
+  //         console.log(err);
+  //       }
+  //     })
+  //   );
+  // };
+
+  //compare userFavorites
+
   useEffect(() => {
-    // getFavorites();
-    getCurrentUser();
-    // getPetIds();
-    getPets(uniqueFavorites);
+    getPets(userFavoritesIds);
   }, []);
 
-  console.log(renderFavs, "renderFavs in favs layout");
- 
+  console.log(userFavorites, "favoritesLayout userfavorites");
+  console.log(renderFavs, "favoritesLayout renderfavs");
+  // console.log(renderFavs[0].data.animal, 'favoritesLayout renderfavs[0]')
+
+  // console.log(userFavoritesIds, 'favoritesLayout userfavoritesIds')
 
   return (
     //this works because of getCurrent user in global context
     <div className="favorites-results">
       {user.name}
 
-     
-
       <div className="animal-results">
-       {renderFavs.length > 0 && renderFavs.map(fav =>{
-        if(fav.status === 200){
-          return <AnimalCard
-          key={fav.data.animal.id}
-          animal={fav.data.animal}
-        />
-        } return <div className="animal-card">
-        <h1 className="animal-card__header">Sorry, this little buddy has already found a forever home</h1>
-      
-        
-        <div className="animal-card__inner-content">
-       
-        </div>
-    
-        </div>        
-       })}
-     
+        {renderFavs.length > 0 &&
+          renderFavs.map((fav) => {
+            if (fav.status === 200) {
+              return (
+                <AnimalCard key={fav.data.animal.id} animal={fav.data.animal} />
+              );
+            }
+            return (
+              <div className="animal-card">
+                <h1 className="animal-card__header">
+                  Sorry, this little buddy has already found a forever home
+                </h1>
+
+                <div className="animal-card__inner-content"></div>
+              </div>
+            );
+          })}
       </div>
     </div>
   );

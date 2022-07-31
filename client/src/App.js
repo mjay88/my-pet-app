@@ -5,7 +5,7 @@ import { GlobalProvider } from "./context/GlobalContext";
 function App() {
   return (
     <div className="App">
-      <GlobalProvider>
+      <GlobalProvider >
         <Layout />
       </GlobalProvider>
     </div>

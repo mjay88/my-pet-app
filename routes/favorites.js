@@ -72,7 +72,7 @@ router.delete("/:favId", requiresAuth, async (req, res) => {
   const fav = await Favorite.findOne({
     //it belongs to our current user
     user:req.user._id,
-    //params
+    //params is _id
     _id: req.params.favId,
   });
   //if no favorite
@@ -90,6 +90,16 @@ router.delete("/:favId", requiresAuth, async (req, res) => {
   console.log(err);
   return res.status(500).send(err.message);
  }
+})
+
+
+router.delete("/", requiresAuth, async (req, res) => {
+  console.log(req.body.animalId)
+
+  Favorite
+    .deleteOne({ "petId": req.body.animalId, "user":req.user._id })
+    .then(dbModel => res.json(dbModel))
+    .catch(err => res.status(422).json(err));
 })
 
 
