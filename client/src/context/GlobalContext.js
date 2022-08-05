@@ -102,9 +102,9 @@ export const GlobalContext = createContext(initialState);
 
 //provider component
 export const GlobalProvider = (props) => {
-  //the reducer acts as the function reduce, but instead of returning a single value, can reduce and return multiple variable values at the same time?
+  //the reducer acts as the function reduce, but instead of returning a single value, can reduce and return multiple variable values at the same time/an object
   const [state, dispatch] = useReducer(globalReducer, initialState);
-
+   
   //useEffect is a hook that we are using as a life cycle method here,
   //the second parameter is what we want to listen to changes for, when we leave it as an empty array this useEffect will run everytime the component ?finishes? mounting, everytime we reload or refresh
   useEffect(() => {
@@ -115,7 +115,7 @@ export const GlobalProvider = (props) => {
     getCurrentUser();
     
   }, []);
-
+ 
   //action: get current user
   const getCurrentUser = async () => {
     //should I just add getPetIds logic from favoritesLayout here?
@@ -269,6 +269,7 @@ const getPets = async (arrayOfIds) => {
     // renderFavs,
     // setRenderFavs,
   };
+  console.log(value, 'value from context')
   return (
     <GlobalContext.Provider value={value}>
       {props.children}

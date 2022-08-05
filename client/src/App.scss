@@ -6,6 +6,14 @@ $dark: #1f2732;
 $dark-light: #2a343f;
 $white: #fff;
 $red: #fc6666;
+
+$primary-text: #22223b;
+$secondary-text: #4a4e69;
+$primary-background: #f2e9e4;
+$secondary-background: #c9ada7;
+$palette-center: #9a8c98;
+$input-hover:lighten($primary-background, 5%);
+
 //authbox
 $light-blue: #8ecae6;
 $secondary-blue: #219ebc;
@@ -21,8 +29,8 @@ body {
   font-family: "DM Sans", "Source Sans Pro", sans-serif;
   padding: 0;
   margin: 0;
-  background-color: $white;
-  color: black;
+  background-color: $primary-background;
+  color: #22223b;
 }
 
 *,
@@ -55,8 +63,9 @@ textarea {
     max-width: 500px;
     width: 100%;
     padding: 50px;
-    background-color: $dark-light;
-    color: $white;
+    background-color: $secondary-background;
+    color: inherit;
+    text-shadow: 1px 1px 2px lightgray;
     border-radius: 5px;
   }
 
@@ -75,22 +84,25 @@ textarea {
     }
 
     input {
-      background-color: $dark;
+      background-color: $primary-background;
       width: 100%;
       padding: 15px;
       border: none;
       border-radius: 5px;
-      color: $white;
+      color: #22223b;
       font-size: 1.25rem;
 
-      &:focus {
+      &:focus, &:hover {
         outline: none;
+        background-color:$input-hover;
       }
     }
   }
   &__footer {
     .btn {
       width: 100%;
+      padding: .5rem;
+      font-size: 1.25rem;
     }
 
     .auth__error {
@@ -127,10 +139,12 @@ textarea {
 
 //header
 .main-header {
-  max-width: 768px;
   width: 100%;
   margin: 0 auto;
   padding: 20px;
+  // align-items: flex-start;
+  // display: block;
+  background-color: $secondary-background;
 
   &__inner {
     display: flex;
@@ -138,16 +152,21 @@ textarea {
   }
   &__left {
     a {
-      margin: 2rem;
+      margin: 2rem 2rem 2rem 0rem;
       text-decoration: none;
       color: inherit;
     }
   }
   &__right {
     a {
+      margin-right: 2rem;
       text-decoration: none;
       color: inherit;
     }
+  }
+  a:hover{
+    color: $primary-background;
+    text-shadow: 1px 1px 2px black;
   }
 }
 
@@ -157,17 +176,68 @@ textarea {
   justify-content: center;
   flex-direction: column;
   align-items: center;
-  h1{
+  h1 {
+    display: inline-block;
     padding: 2rem;
+    text-align: center;
+    
   }
   img {
-    max-width: 25rem;
+    max-width: 90%;
+
   }
+  // @media (max-width: 1200px ) {
+  //   img{
+  //     max-width: 100%;
+  //   }
+  //  }
   p {
     padding: 3rem;
     margin: 3rem;
     text-align: center;
   }
+
+  &__last-content {
+    background-image: url(https://images.unsplash.com/photo-1534361960057-19889db9621e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=3870&q=80);
+    background-size: 100% 100%;
+    min-height: 40rem;
+    p{
+      color: $primary-background;
+    }
+  }
+
+  @media (max-width: 369px ) {
+   .home{
+    &__last-content {
+      min-height: 50rem;
+    }
+   }
+  }
+
+  //   &__inner-content{
+
+  //     &__last{
+  //     background-image: url(https://images.unsplash.com/photo-1534361960057-19889db9621e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=3870&q=80);
+  //     background-size: 100% 100%;
+  //     min-height: auto;
+  //     z-index: -1;
+  //     p{
+  //       color: $primary-text;
+  //       opacity: 1;
+  //       min-height: 50rem;
+  //     }
+  //   }
+  // }
+
+  // &__inner__content__last::before{
+  //   content: "";
+  //   position: absolute;
+  //   top: 0px;
+  //   right: 0px;
+  //   bottom: 0px;
+  //   left: 0px;
+  //   background-color: rgba(0,0,0,0.5);
+  // }
 }
 
 //animal card
@@ -238,12 +308,16 @@ textarea {
   align-items: center;
 }
 //favs layout
-.favorites-results{
+.favorites-results {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  
+}
+.no-favorites{
+  display: inline-block;
+  text-align: center;
+  padding: 2rem;
 }
 
 //search bar
@@ -260,15 +334,15 @@ textarea {
 
 //footer
 
-.footer{
-  
+.footer {
   max-width: 768px;
-  width: 100%;
+  // width: 100%;
   margin: 0 auto;
   padding: 20px;
-  &__inner{
+  &__inner {
     display: flex;
-  justify-content: space-around;
-  align-items: center;
+    justify-content: space-around;
+    align-items: center;
+    padding: 20px;
   }
 }
