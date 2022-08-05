@@ -143,13 +143,13 @@ const FavoritesLayout = (props) => {
 
   // console.log(userFavoritesIds, 'favoritesLayout userfavoritesIds')
 
-  return (
+  return renderFavs.length > 0 ? (
     //this works because of getCurrent user in global context
     <div className="favorites-results">
-      {user.name}
+   
 
       <div className="animal-results">
-        {renderFavs.length > 0 &&
+        {
           renderFavs.map((fav) => {
             if (fav.status === 200) {
               return (
@@ -168,6 +168,8 @@ const FavoritesLayout = (props) => {
           })}
       </div>
     </div>
+  ) :(
+    <div className="no-favorites">Go to Search to add pets to your Favorites!!!</div>
   );
 };
 

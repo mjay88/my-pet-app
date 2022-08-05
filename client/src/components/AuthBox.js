@@ -8,6 +8,7 @@ import { useGlobalContext } from "../context/GlobalContext";
 //register is a just prop set set to true if we are on the register route. set in layout. That is how all the conditional statements on this page work
 const AuthBox = ({ register }) => {
   const { getCurrentUser, user } = useGlobalContext();
+  console.log(user, 'user authbox')
   const navigate = useNavigate();
   //setting state from form input
   const [email, setEmail] = React.useState("");

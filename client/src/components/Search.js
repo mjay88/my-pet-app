@@ -17,8 +17,8 @@ export default function Search() {
   //set state to something so our animal array renders on render.
   const [animalType, setAnimalType] = React.useState("dog");
   //token should now be in context
-  const {token} = useGlobalContext();
-
+  const {token, user} = useGlobalContext();
+  console.log(user, 'user in search')
   //handle submitted form
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -82,7 +82,7 @@ export default function Search() {
           <option value="dog">Dog</option>
           <option value="cat">Cat</option>
         </select>
-        <input type="number" value={zipCode} onChange={zipCodeHandler} />
+        <input type="number" value={zipCode} placeholder={"enter your zip code"} onChange={zipCodeHandler} />
 
         <input type="submit" />
       </form>

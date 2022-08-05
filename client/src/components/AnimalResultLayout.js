@@ -4,7 +4,7 @@ import AnimalCard from './AnimalCard';
 import "../App.scss";
 
 export default function AnimalResultLayout(props) {
-	console.log(props.animals, 'from animalresults');
+	// console.log(props.animals, 'from animalresults');
 
 	return (
 		//need a conditional here for when props.animals.animals is empty, cant iterate through undefined

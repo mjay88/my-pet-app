@@ -6,10 +6,11 @@ import { useGlobalContext } from "../context/GlobalContext";
 const AnimalCard = (props) => {
   const { animal } = props;
   const [loading, setLoading] = useState(false);
-  const { addFav, userFavorites, removeFav } = useGlobalContext();
+  const { user, addFav, userFavorites, removeFav } = useGlobalContext();
   const [unliked, setUnliked] = useState(false);
   //try seperating the logic that deals with state from the logic that deals with updating database i.e. the post request
-  console.log(animal, "top of animal card");
+  // console.log(props, "here is a prop")
+  // console.log(animal, "top of animal card");
   // console.log(userFavorites, "userFavorites top of animal card")
 
   //rename userFavorites petId key to id, copy by reference issue?
@@ -28,6 +29,10 @@ const AnimalCard = (props) => {
 
   //deal with case of liking something twice
   const likeHandler = async (e) => {
+    if(!user){
+      alert("You must be logged in to save animals! Please login or register for an account!");
+      setLoading(false);
+    } else {
     setLoading(true);
 
     const favorite = {
@@ -56,8 +61,8 @@ const AnimalCard = (props) => {
     if (result2.success === true) {
     }
 
-    setLoading(false);
-  };
+    setLoading(true);
+}};
   //
   const unlikeHandler = async (animal) => {
     setLoading(true);
@@ -76,7 +81,6 @@ const AnimalCard = (props) => {
     <div></div>
   ) : (
     <div className="animal-card">
-      {animal.id}
       {animal.photos && animal.photos[0] && animal.photos[0].full ? (
         <img
           src={animal.photos[0].full}
@@ -112,7 +116,10 @@ const AnimalCard = (props) => {
               {loading ? "Liked" : "Like"}
             </button>
           )}
+          <a href={animal.url} target="_blank" rel="noreferrer">
           <button className="ripple btn2">More Info!</button>
+        </a>
+       
         </div>
       </div>
     </div>

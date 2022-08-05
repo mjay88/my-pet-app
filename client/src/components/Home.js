@@ -1,7 +1,10 @@
 import React from "react";
-import Bug from "../images/3415.jpg";
+import Bug from "../images/3419.jpg";
+import { useGlobalContext } from "../context/GlobalContext";
 
 export default function Home() {
+  const { getCurrentUser, user } = useGlobalContext();
+  console.log(user, 'user in home')
   return (
     <div className="home">
       <h1>Welcome to adopt a pet!!!</h1>
@@ -16,11 +19,13 @@ export default function Home() {
           perferendis mollitia nostrum odio ad ipsa rerum natus laboriosam
           dolorem porro! Quas sequi mollitia repellendus repudiandae.
         </p>
-        <p>
-          Lorem cupiditate molestiae illum aspernatur id quaerat molestias
-          laboriosam. Dolores, adipisci rerum reiciendis, maxime praesentium
-          facere, animi ex numquam quisquam architecto minus?
-        </p>
+        <div className="home__last-content">
+          <p>
+            Lorem cupiditate molestiae illum aspernatur id quaerat molestias
+            laboriosam. Dolores, adipisci rerum reiciendis, maxime praesentium
+            facere, animi ex numquam quisquam architecto minus?
+          </p>
+        </div>
       </div>
     </div>
   );
