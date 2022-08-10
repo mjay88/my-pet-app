@@ -13,6 +13,7 @@ const FavoritesLayout = (props) => {
   //probably should save the
   const [token, setToken] = React.useState("");
   const [renderFavs, setRenderFavs] = React.useState("");
+  const [loading, setLoading] = React.useState(false);
 
   const {
     //userFavorites is whats saved in our database
@@ -72,7 +73,7 @@ const FavoritesLayout = (props) => {
                 breed: data.data.animal.breeds.primary,
                 photo: data.data.animal.photos[0].full,
               };
-              console.log(newData, "newData")
+              console.log(newData, "newData");
             }
 
             return data;
@@ -138,24 +139,24 @@ const FavoritesLayout = (props) => {
   }, []);
 
   console.log(userFavorites, "favoritesLayout userfavorites");
-  console.log(renderFavs, "favoritesLayout renderfavs");
+  console.log(renderFavs, "favoritesLayout renderfavs", user);
   // console.log(renderFavs[0].data.animal, 'favoritesLayout renderfavs[0]')
 
   // console.log(userFavoritesIds, 'favoritesLayout userfavoritesIds')
 
   return renderFavs.length > 0 ? (
+    
     //this works because of getCurrent user in global context
     <div className="favorites-results">
-   
-
+      <div className="user"><h2>{`Welcome Back ${user.name}!`}</h2></div>
       <div className="animal-results">
-        {
-          renderFavs.map((fav) => {
-            if (fav.status === 200) {
-              return (
-                <AnimalCard key={fav.data.animal.id} animal={fav.data.animal} />
-              );
-            }
+        {renderFavs.map((fav) => {
+          if (fav.status === 200) {
+            return (
+              <AnimalCard key={fav.data.animal.id} animal={fav.data.animal} />
+            );
+          }
+          if (fav.status !== 200) {
             return (
               <div className="animal-card">
                 <h1 className="animal-card__header">
@@ -165,11 +166,26 @@ const FavoritesLayout = (props) => {
                 <div className="animal-card__inner-content"></div>
               </div>
             );
-          })}
+          }
+          if (user && renderFavs.length < 0) {
+            return (
+              <div className="no-favorites">
+                <div className="lds-ring">
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                  <div></div>
+                </div>
+              </div>
+            );
+          }
+        })}
       </div>
     </div>
-  ) :(
-    <div className="no-favorites">Go to Search to add pets to your Favorites!!!</div>
+  ) : (
+    <div className="no-favorites">
+      <p>Go to search to add pets to you're favorites</p>
+    </div>
   );
 };
 

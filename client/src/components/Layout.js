@@ -17,7 +17,7 @@ const {animals} = props;
    //if fetching User is false, display our loading div
   return  fetchingUser ? (
     <div className="loading">
-      <h1>Loading</h1>
+   <div className="lds-ring"><div></div><div></div><div></div><div></div></div>
     </div>
   ) : (
     <BrowserRouter>

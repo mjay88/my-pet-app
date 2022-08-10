@@ -18,6 +18,9 @@ export default function Search() {
   const [animalType, setAnimalType] = React.useState("dog");
   //token should now be in context
   const {token, user} = useGlobalContext();
+  //set loading
+  const [loading, setLoading] = React.useState(false);
+
   console.log(user, 'user in search')
   //handle submitted form
   const handleSubmit = (e) => {
@@ -71,9 +74,9 @@ export default function Search() {
     // console.log("use efect on frist load");
   }, []);
 
-  console.log(token, "token", animals, "animals");
-
-  return (
+  console.log(token, "token", animals, "animals", animals.length);
+   
+  return animals.length ? (
     <>
       {/**is this appropiate jsx? */}
       <form className="search-bar" onSubmit={handleSubmit}>
@@ -88,5 +91,14 @@ export default function Search() {
       </form>
       <AnimalResultLayout animals={animals} />
     </>
+  ) : (
+    <div className="no-favorites">
+      <div className="lds-ring">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    </div>
   );
 }

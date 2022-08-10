@@ -24,9 +24,9 @@ const Header = () => {
             <Link to="/" className="btn" onClick={logout}>
               Logout
             </Link>
-          ) : pathname === "/" ? (
+          ) : pathname === "/login" ? (
             <Link to="/register" className="btn">
-              Register
+             Register
             </Link>
           ) : (
             <Link to="/login" className="btn">

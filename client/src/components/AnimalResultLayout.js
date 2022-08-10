@@ -6,7 +6,7 @@ import "../App.scss";
 export default function AnimalResultLayout(props) {
 	// console.log(props.animals, 'from animalresults');
 
-	return (
+	return props.animals.length > 0 ? (
 		//need a conditional here for when props.animals.animals is empty, cant iterate through undefined
 		//why arent images rendering
 		<div className='animal-results'>
@@ -17,5 +17,7 @@ export default function AnimalResultLayout(props) {
 					return <AnimalCard key={animal.id} animal={animal} />;
 				})}
 		</div>
-	);
+	) : (
+		<div></div>
+	)
 }
