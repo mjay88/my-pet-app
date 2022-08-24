@@ -20,9 +20,11 @@ const favoritesRoute = require("./routes/favorites")
 app.get("/api", (req, res) => {
     res.send("Working")
   });
-  
+  //test
   app.post("/name", (req, res) => {
+  //any data we send through our endpoint it will be available on the body
     if(req.body.name) {
+      
       return res.json({name: req.body.name});
         } else {
           return res.status(400).json({error: "No name provided"});
@@ -53,7 +55,7 @@ app.get("/api", (req, res) => {
    
    
   app.listen(process.env.PORT, () => {
-      console.log(`Server running on port ${Number(process.env.PORT)}`);
+      console.log(`Server running on port ${Number(process.env.PORT)} ${process.env.REACT_APP_SECRET}`);
   });
   }).catch((error) => {
     console.log(error);

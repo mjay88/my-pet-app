@@ -3,8 +3,6 @@ import AnimalResultLayout from "./AnimalResultLayout";
 import "../App.scss";
 import { useGlobalContext } from "../context/GlobalContext";
 
-let key = "ssg62RKnSfXN0CwnanhRQRMwwwZTvuGnt8BE3th4ujwGKi3Dc4";
-let secret = "xCknCe8Vbez42FlMgPWdK95ngdg5G0lIMXSLB9FB";
 //need to add search validation, "please choose a valid postal code"," you must select an animal type"
 
 export default function Search() {
@@ -17,22 +15,22 @@ export default function Search() {
   //set state to something so our animal array renders on render.
   const [animalType, setAnimalType] = React.useState("dog");
   //token should now be in context
-  const {token, user} = useGlobalContext();
+  const { token, user } = useGlobalContext();
   //set loading
   const [loading, setLoading] = React.useState(false);
 
-  console.log(user, 'user in search')
   //handle submitted form
   const handleSubmit = (e) => {
     e.preventDefault();
+    //api call to petfinder in
 
-    //api call to petfinder
     getAnimals();
+    //api call to petfinder
+    // getAnimals();
     //reset user input
     setAnimalType("");
     setZipCode("");
   };
-
   //handler for search params type
   const typeHandler = (e) => {
     setAnimalType(e.target.value);
@@ -48,7 +46,7 @@ export default function Search() {
         `https://api.petfinder.com/v2/animals?type=${animalType}&location=${zipCode}&limit=50`,
         {
           method: "GET",
-            // mode: "no-cors",
+          // mode: "no-cors",
           headers: {
             "Content-Type": "application/json",
             Authorization: "Bearer " + localStorage.getItem("token"),
@@ -66,7 +64,6 @@ export default function Search() {
   //useEffect runs on iniital render, getToken gets the token and getAnimals makes fetch to petFinderApi,
   //reset animal type and zip from the initial value
   useEffect(() => {
-
     getAnimals();
     setAnimalType("");
     setZipCode("");
@@ -74,24 +71,7 @@ export default function Search() {
     // console.log("use efect on frist load");
   }, []);
 
-  console.log(token, "token", animals, "animals", animals.length);
-   
-  return animals.length ? (
-    <>
-      {/**is this appropiate jsx? */}
-      <form className="search-bar" onSubmit={handleSubmit}>
-        <select value={animalType} onChange={typeHandler}>
-          <option>Pick</option>
-          <option value="dog">Dog</option>
-          <option value="cat">Cat</option>
-        </select>
-        <input type="number" value={zipCode} placeholder={"enter your zip code"} onChange={zipCodeHandler} />
-
-        <input type="submit" />
-      </form>
-      <AnimalResultLayout animals={animals} />
-    </>
-  ) : (
+  return !animals.length  ? (
     <div className="no-favorites">
       <div className="lds-ring">
         <div></div>
@@ -100,5 +80,25 @@ export default function Search() {
         <div></div>
       </div>
     </div>
+  ) : (
+    <>
+      {/**is this appropiate jsx? */}
+      <form className="search-bar" onSubmit={handleSubmit}>
+        <select value={animalType} onChange={typeHandler}>
+          <option>Pick</option>
+          <option value="dog">Dog</option>
+          <option value="cat">Cat</option>
+        </select>
+        <input
+          type="number"
+          value={zipCode}
+          placeholder={"enter your zip code"}
+          onChange={zipCodeHandler}
+        />
+
+        <input type="submit" />
+      </form>
+      <AnimalResultLayout animals={animals} />
+    </>
   );
 }
